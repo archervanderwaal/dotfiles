@@ -27,3 +27,5 @@ alias ge=graph-easy
 
 # run all junit tests
 alias jtest="mvn test"
+
+alias rnmb="git branch | grep -v master | xargs git branch -D"
