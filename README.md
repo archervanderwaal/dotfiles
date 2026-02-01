@@ -18,8 +18,9 @@ brew install chezmoi
 # Clone dotfiles
 chezmoi init git@github.com:archervanderwaal/dotfiles.git
 
-# Setup configuration (interactive)
-~/.local/share/chezmoi/setup-config.sh
+# Setup configuration
+cp ~/.local/share/chezmoi/chezmoi.toml.template ~/.config/chezmoi/chezmoi.toml
+# Edit ~/.config/chezmoi/chezmoi.toml and fill in your tokens
 
 # Apply dotfiles
 chezmoi apply
@@ -28,38 +29,35 @@ chezmoi apply
 ~/.local/share/chezmoi/install.sh
 ```
 
-## One-line Setup
-
-```bash
-bash -c "$(curl -fsSL https://raw.githubusercontent.com/archervanderwaal/dotfiles/main/install.sh)"
-```
-
 ## Secrets Management
 
 Sensitive data (API keys, tokens) are managed via `chezmoi.toml`.
 
-### Interactive Setup (Recommended)
+### Setup Configuration
 
+1. Copy the template:
 ```bash
-~/.local/share/chezmoi/setup-config.sh
+cp ~/.local/share/chezmoi/chezmoi.toml.template ~/.config/chezmoi/chezmoi.toml
 ```
 
-This will prompt you for:
-- Anthropic API token (for Claude)
-- GitHub personal access token (optional)
-- OpenAI API key (optional)
+2. Edit and fill your tokens:
+```bash
+vim ~/.config/chezmoi/chezmoi.toml
+```
 
-### Manual Setup
-
-Create `~/.config/chezmoi/chezmoi.toml`:
-
+3. Fill in your actual tokens:
 ```toml
 [data.anthropic]
-token = "your_anthropic_token"
+token = "sk-ant-xxx..."
 
 [data.github]
-token = "your_github_token"
+token = "ghp_xxx..."
+
+[data.openai]
+apikey = "sk-xxx..."
 ```
+
+Delete the sections you don't need.
 
 ## Common Commands
 
@@ -83,7 +81,6 @@ dot-push               # Commit and push changes
 ├── dot_vscode/             # → ~/.vscode/
 ├── dot_claude/             # → ~/.claude/
 ├── dot_oh-my-zsh_custom/   # → ~/.oh-my-zsh/custom/
-├── setup-config.sh         # Interactive config setup
 ├── install.sh              # Dependency installer
 └── chezmoi.toml.template   # Config template
 
@@ -91,32 +88,32 @@ dot-push               # Commit and push changes
 └── chezmoi.toml            # Your actual tokens
 ```
 
-## Installation Script
-
-The `install.sh` script automatically installs:
-- Core tools (git, vim, tmux, zsh)
-- oh-my-zsh
-- vim-plug and vim plugins
-- tmux plugins (via TPM)
-- VSCode extensions
-
 ## New Machine Setup
 
-1. **Install Homebrew** (macOS only):
+1. **Install Homebrew** (macOS):
    ```bash
    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
    ```
 
-2. **Clone and setup**:
+2. **Clone dotfiles**:
    ```bash
    brew install chezmoi
    chezmoi init git@github.com:archervanderwaal/dotfiles.git
-   ~/.local/share/chezmoi/setup-config.sh
+   ```
+
+3. **Setup configuration**:
+   ```bash
+   cp ~/.local/share/chezmoi/chezmoi.toml.template ~/.config/chezmoi/chezmoi.toml
+   vim ~/.config/chezmoi/chezmoi.toml  # Fill in your tokens
+   ```
+
+4. **Apply and install**:
+   ```bash
    chezmoi apply
    ~/.local/share/chezmoi/install.sh
    ```
 
-3. **Restart shell**:
+5. **Restart shell**:
    ```bash
    exec zsh
    ```
@@ -151,5 +148,14 @@ chezmoi add ~/.config/myapp/config
 
 # Commit and push
 cd ~/.local/share/chezmoi
-git add -A && git commit -m "Add myapp config" && git push
+git commit -m "Add myapp config" && git push
 ```
+
+## Installation Script
+
+The `install.sh` script automatically installs:
+- Core tools (git, vim, tmux, zsh)
+- oh-my-zsh
+- vim-plug and vim plugins
+- tmux plugins (via TPM)
+- VSCode extensions
