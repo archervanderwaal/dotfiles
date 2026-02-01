@@ -72,31 +72,11 @@ if [[ "$OS" == "macos" ]]; then
     fi
 
    ################################################################################
-    # Step 2: Configure Homebrew mirror (Tsinghua China mirror)
+    # Step 2: Configure Homebrew git remote (Tsinghua mirror)
     ################################################################################
 
-    print_info "Configuring Homebrew mirror (Tsinghua)..."
-
-    # Configure git remote
+    print_info "Configuring Homebrew git remote..."
     cd "$(brew --repo)" && git remote set-url origin https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/brew.git
-
-    # Force set environment variables (override Aliyun or others)
-    export HOMEBREW_API_DOMAIN="https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles/api"
-    export HOMEBREW_BOTTLE_DOMAIN="https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles"
-    export HOMEBREW_BREW_GIT_REMOTE="https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/brew.git"
-    export HOMEBREW_CORE_GIT_REMOTE="https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/homebrew-core.git"
-
-    # Remove Aliyun mirror config from .zshrc if exists
-    sed -i '' '/HOMEBREW.*aliyun/d' ~/.zshrc 2>/dev/null || true
-    sed -i '' '/PIP.*aliyun/d' ~/.zshrc 2>/dev/null || true
-
-    # Write Tsinghua mirror to .zshrc
-    if ! grep -q "HOMEBREW_BOTTLE_DOMAIN.*tsinghua" ~/.zshrc 2>/dev/null; then
-        echo "" >> ~/.zshrc
-        echo "# Homebrew Tsinghua mirror" >> ~/.zshrc
-        echo "export HOMEBREW_API_DOMAIN=\"https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles/api\"" >> ~/.zshrc
-        echo "export HOMEBREW_BOTTLE_DOMAIN=\"https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles\"" >> ~/.zshrc
-    fi
 
     ################################################################################
     # Step 3: Install all packages from Brewfile
