@@ -76,7 +76,22 @@ if [[ "$OS" == "macos" ]]; then
     ################################################################################
 
     print_info "Configuring Homebrew mirror (Tsinghua)..."
+
+    # Configure git remote
     cd "$(brew --repo)" && git remote set-url origin https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/brew.git
+
+    # Set environment variables for current session
+    export HOMEBREW_API_DOMAIN="https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles/api"
+    export HOMEBREW_BOTTLE_DOMAIN="https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles"
+
+    # Write to shell profile for persistence
+    PROFILE_FILE="$HOME/.zshrc"
+    if ! grep -q "HOMEBREW_BOTTLE_DOMAIN.*tsinghua" "$PROFILE_FILE" 2>/dev/null; then
+        echo "" >> "$PROFILE_FILE"
+        echo "# Homebrew Tsinghua mirror" >> "$PROFILE_FILE"
+        echo "export HOMEBREW_API_DOMAIN=\"https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles/api\"" >> "$PROFILE_FILE"
+        echo "export HOMEBREW_BOTTLE_DOMAIN=\"https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles\"" >> "$PROFILE_FILE"
+    fi
 
     ################################################################################
     # Step 3: Install all packages from Brewfile
