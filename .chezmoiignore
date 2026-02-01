@@ -40,3 +40,6 @@ dot_vscode/extensions/*/node_modules
 dot_vscode/extensions/*/out
 dot_vscode/extensions/*/*.so
 dot_vscode/extensions/*/*.dll
+
+# 排除 chezmoi 本地配置（包含敏感信息）
+dot_config/chezmoi
