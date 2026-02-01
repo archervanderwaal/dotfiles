@@ -1,0 +1,18 @@
+# 排除包含敏感信息的文件
+dot_config/private
+dot_config/*/*private*
+
+# 排除二进制文件
+*.plist
+*.binary
+
+# 排除编辑器临时文件
+*.swp
+*.swo
+*~
+
+# 排除缓存和历史
+.viminfo
+.netrwhist
+.zsh_history
+.zsessions
