@@ -23,6 +23,23 @@ print_error() {
     echo -e "${RED}[ERROR]${NC} $1"
 }
 
+# Setup configuration file if not exists
+CHEZMOI_CONFIG="$HOME/.config/chezmoi/chezmoi.toml"
+CHEZMOI_TEMPLATE="$HOME/.local/share/chezmoi/chezmoi.toml.template"
+
+if [[ ! -f "$CHEZMOI_CONFIG" ]]; then
+    if [[ -f "$CHEZMOI_TEMPLATE" ]]; then
+        print_info "Creating config file from template..."
+        mkdir -p "$(dirname "$CHEZMOI_CONFIG")"
+        cp "$CHEZMOI_TEMPLATE" "$CHEZMOI_CONFIG"
+        print_warn "Please edit $CHEZMOI_CONFIG and fill in your tokens"
+        print_warn "Then run: chezmoi apply"
+        exit 0
+    else
+        print_warn "Template not found. Skipping config setup."
+    fi
+fi
+
 # Detect OS
 if [[ "$OSTYPE" == "darwin"* ]]; then
     OS="macos"
