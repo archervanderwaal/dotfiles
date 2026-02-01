@@ -119,6 +119,7 @@ export GO111MODULE=on
 export GOSUMDB=off
 export GOPROXY=http://goproxy.intra.xiaojukeji.com,direct
 export PATH=$GOPATH/bin:$PATH
+export PATH=$HOME/.local/bin:$PATH
 export PATH=$HOME/.rpc-tools:$PATH
 
 export https_proxy=http://127.0.0.1:7890 
