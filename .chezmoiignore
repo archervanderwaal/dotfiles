@@ -1,10 +1,3 @@
-# 排除包含敏感信息的文件
-dot_config/private
-dot_config/*/*private*
-
-# 排除二进制文件
-*.binary
-
 # 排除编辑器临时文件
 *.swp
 *.swo
@@ -30,6 +23,13 @@ dot_claude/stats-cache.json
 dot_claude/todos
 dot_claude/statsig
 
+# 排除 oh-my-zsh 插件目录（由 install.sh 管理）
+dot_oh-my-zsh/custom/plugins
+dot_oh-my-zsh/custom/themes
+
+# 排除 zsh 编译文件
+*.zwc
+dot_oh-my-zsh/custom/**/*.zwc
 
 # 排除 VSCode 扩展二进制文件
 dot_vscode/extensions/*/node_modules
@@ -40,26 +40,8 @@ dot_vscode/extensions/*/*.dll
 # 排除 chezmoi 本地配置（包含敏感信息）
 dot_config/chezmoi
 
-# 排除 zsh 编译文件
-*.zwc
-dot_oh-my-zsh/custom/**/*.zwc
-
-# 排除 oh-my-zsh 插件目录（由 install.sh 管理）
-dot_oh-my-zsh/custom/plugins
-dot_oh-my-zsh/custom/themes
-
-# 排除系统目录（无权限）
-Library/Accounts
-Library/Application Support
-Library/Calendars
-Library/Caches
-Library/Containers
-Library/Cookies
-Library/Fonts
-Library/Keyboard Services
-Library/Mail
-Library/Messages
-Library/Safari
-Library/Saved Application State
-Library/SpellChecker
-Library/VoiceOver
+# 白名单：只管理 iTerm2 配置，排除其他 Library 文件
+Library/*
+!Library/Preferences
+Library/Preferences/*
+!Library/Preferences/com.googlecode.iterm2.plist
