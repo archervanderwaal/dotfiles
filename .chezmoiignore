@@ -32,8 +32,8 @@ dot_claude/todos
 dot_claude/statsig
 
 # 排除 oh-my-zsh 插件中的 .git 目录
-dot_oh-my-zsh_custom/*/.git
-dot_oh-my-zsh_custom/*/.git/*
+dot_oh-my-zsh/custom/*/.git
+dot_oh-my-zsh/custom/*/.git/*
 
 # 排除 VSCode 扩展二进制文件
 dot_vscode/extensions/*/node_modules
@@ -46,4 +46,4 @@ dot_config/chezmoi
 
 # 排除 zsh 编译文件
 *.zwc
-dot_oh-my-zsh_custom/**/*.zwc
+dot_oh-my-zsh/custom/**/*.zwc
