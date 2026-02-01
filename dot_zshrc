@@ -122,10 +122,13 @@ export PATH=$GOPATH/bin:$PATH
 export PATH=$HOME/.rpc-tools:$PATH
 
 export https_proxy=http://127.0.0.1:7890 
-export http_proxy=http://127.0.0.1:7890 
+export http_proxy=http://127.0.0.1:7890
 # export all_proxy=socks5://127.0.0.1:7890
 
-. "$HOME/.local/bin/env"
+# Source local env if exists
+if [[ -f "$HOME/.local/bin/env" ]]; then
+    . "$HOME/.local/bin/env"
+fi
 
 
 
