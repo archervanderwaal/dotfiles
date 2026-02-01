@@ -84,7 +84,10 @@ if [[ "$OS" == "macos" ]]; then
 
     if [[ -f ~/.Brewfile ]]; then
         print_info "Installing packages from Brewfile..."
-        brew bundle --file=~/.Brewfile
+        if ! brew bundle --file=~/.Brewfile; then
+            print_warn "Some packages failed to install. Check output above."
+            print_warn "Continuing with remaining steps..."
+        fi
     else
         print_warn "Brewfile not found, skipping..."
     fi
@@ -107,25 +110,31 @@ if [[ "$OS" == "macos" ]]; then
     # zsh-autosuggestions
     if [[ ! -d ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions ]]; then
         print_info "  Installing zsh-autosuggestions..."
-        git clone https://github.com/zsh-users/zsh-autosuggestions ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions
+        if ! git clone https://github.com/zsh-users/zsh-autosuggestions ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions; then
+            print_warn "  Failed to install zsh-autosuggestions"
+        fi
     else
         print_info "  Updating zsh-autosuggestions..."
-        (cd ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions && git pull --quiet)
+        (cd ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions && git pull --quiet) || print_warn "  Failed to update zsh-autosuggestions"
     fi
 
     # zsh-syntax-highlighting
     if [[ ! -d ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting ]]; then
         print_info "  Installing zsh-syntax-highlighting..."
-        git clone https://github.com/zsh-users/zsh-syntax-highlighting ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting
+        if ! git clone https://github.com/zsh-users/zsh-syntax-highlighting ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting; then
+            print_warn "  Failed to install zsh-syntax-highlighting"
+        fi
     else
         print_info "  Updating zsh-syntax-highlighting..."
-        (cd ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting && git pull --quiet)
+        (cd ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting && git pull --quiet) || print_warn "  Failed to update zsh-syntax-highlighting"
     fi
 
     # powerlevel10k theme
     if [[ ! -d ~/.oh-my-zsh/custom/themes/powerlevel10k ]]; then
         print_info "  Installing powerlevel10k..."
-        git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ~/.oh-my-zsh/custom/themes/powerlevel10k
+        if ! git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ~/.oh-my-zsh/custom/themes/powerlevel10k; then
+            print_warn "  Failed to install powerlevel10k"
+        fi
     else
         print_info "  powerlevel10k already installed"
     fi
@@ -136,7 +145,9 @@ if [[ "$OS" == "macos" ]]; then
 
     if command -v vim &> /dev/null; then
         print_info "Installing vim plugins..."
-        vim +PlugInstall +qall
+        if ! vim +PlugInstall +qall; then
+            print_warn "Failed to install vim plugins"
+        fi
     fi
 
    ################################################################################
@@ -145,7 +156,9 @@ if [[ "$OS" == "macos" ]]; then
 
     if [[ -d ~/.tmux/plugins/tpm ]] && [[ ! -d ~/.tmux/plugins/tmux-sensible ]]; then
         print_info "Installing tmux plugins..."
-        ~/.tmux/plugins/tpm/bin/install_plugins
+        if ! ~/.tmux/plugins/tpm/bin/install_plugins; then
+            print_warn "Failed to install tmux plugins"
+        fi
     fi
 
 elif [[ "$OS" == "linux" ]]; then
@@ -170,18 +183,24 @@ elif [[ "$OS" == "linux" ]]; then
     # Install oh-my-zsh
     if [[ ! -d ~/.oh-my-zsh ]]; then
         print_info "Installing oh-my-zsh..."
-        sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+        if ! sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended; then
+            print_warn "Failed to install oh-my-zsh"
+        fi
     fi
 
     # Install zsh plugins (same as macOS)
     print_info "Installing oh-my-zsh custom plugins..."
 
     if [[ ! -d ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions ]]; then
-        git clone https://github.com/zsh-users/zsh-autosuggestions ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions
+        if ! git clone https://github.com/zsh-users/zsh-autosuggestions ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions; then
+            print_warn "Failed to install zsh-autosuggestions"
+        fi
     fi
 
     if [[ ! -d ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting ]]; then
-        git clone https://github.com/zsh-users/zsh-syntax-highlighting ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting
+        if ! git clone https://github.com/zsh-users/zsh-syntax-highlighting ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting; then
+            print_warn "Failed to install zsh-syntax-highlighting"
+        fi
     fi
 fi
 
