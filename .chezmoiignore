@@ -47,3 +47,19 @@ dot_oh-my-zsh/custom/**/*.zwc
 # 排除 oh-my-zsh 插件目录（由 install.sh 管理）
 dot_oh-my-zsh/custom/plugins
 dot_oh-my-zsh/custom/themes
+
+# 排除系统目录（无权限）
+Library/Accounts
+Library/Application Support
+Library/Calendars
+Library/Caches
+Library/Containers
+Library/Cookies
+Library/Fonts
+Library/Keyboard Services
+Library/Mail
+Library/Messages
+Library/Safari
+Library/Saved Application State
+Library/SpellChecker
+Library/VoiceOver
