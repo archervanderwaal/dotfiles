@@ -121,6 +121,16 @@ if [[ ! -f ~/.vim/autoload/plug.vim ]]; then
         https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 fi
 
+# Install Node.js for coc.nvim
+if ! command -v node &> /dev/null; then
+    print_info "Installing Node.js (required for coc.nvim)..."
+    if [[ "$OS" == "macos" ]]; then
+        brew install node
+    else
+        $INSTALL_CMD nodejs npm
+    fi
+fi
+
 # Install vim plugins
 print_info "Installing vim plugins..."
 vim +PlugInstall +qall
