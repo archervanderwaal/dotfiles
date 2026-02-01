@@ -152,3 +152,7 @@ alias dot-apply='chezmoi apply'
 alias dot-status='chezmoi status'
 alias dot-update='chezmoi update'
 alias dot-push='cd ~/.local/share/chezmoi && git add -A && git commit -m "Update $(date +%Y-%m-%d)" && git push'
+
+# Homebrew Tsinghua mirror
+export HOMEBREW_BOTTLE_DOMAIN="https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles"
+export HOMEBREW_API_DOMAIN="https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles/api"
