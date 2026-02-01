@@ -85,6 +85,35 @@ if [[ ! -d ~/.oh-my-zsh ]]; then
     sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
 fi
 
+# Install oh-my-zsh custom plugins
+print_info "Installing oh-my-zsh custom plugins..."
+
+# zsh-autosuggestions
+if [[ ! -d ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions ]]; then
+    print_info "  Installing zsh-autosuggestions..."
+    git clone https://github.com/zsh-users/zsh-autosuggestions ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions
+else
+    print_info "  Updating zsh-autosuggestions..."
+    (cd ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions && git pull --quiet)
+fi
+
+# zsh-syntax-highlighting
+if [[ ! -d ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting ]]; then
+    print_info "  Installing zsh-syntax-highlighting..."
+    git clone https://github.com/zsh-users/zsh-syntax-highlighting ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting
+else
+    print_info "  Updating zsh-syntax-highlighting..."
+    (cd ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting && git pull --quiet)
+fi
+
+# powerlevel10k theme
+if [[ ! -d ~/.oh-my-zsh/custom/themes/powerlevel10k ]]; then
+    print_info "  Installing powerlevel10k..."
+    git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ~/.oh-my-zsh/custom/themes/powerlevel10k
+else
+    print_info "  powerlevel10k already installed"
+fi
+
 # Install vim-plug if not exists
 if [[ ! -f ~/.vim/autoload/plug.vim ]]; then
     print_info "Installing vim-plug..."

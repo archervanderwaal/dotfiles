@@ -44,3 +44,7 @@ dot_config/chezmoi
 # 排除 zsh 编译文件
 *.zwc
 dot_oh-my-zsh/custom/**/*.zwc
+
+# 排除 oh-my-zsh 插件目录（由 install.sh 管理）
+dot_oh-my-zsh/custom/plugins
+dot_oh-my-zsh/custom/themes
