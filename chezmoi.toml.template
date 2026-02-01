@@ -1,0 +1,23 @@
+# Chezmoi local configuration template
+# This file contains the structure for your sensitive data
+# DO NOT put real tokens here - this is just a template
+# Run setup-config.sh to generate your actual chezmoi.toml
+
+[data.anthropic]
+# Your Anthropic API token for Claude
+# Get from: https://console.anthropic.com/settings/keys
+token = ""
+
+[data.github]
+# GitHub personal access token (optional)
+# Get from: https://github.com/settings/tokens
+token = ""
+
+[data.openai]
+# OpenAI API key (optional)
+# Get from: https://platform.openai.com/api-keys
+apikey = ""
+
+# Add other service tokens as needed
+# [data.servicename]
+# token = "your_token"

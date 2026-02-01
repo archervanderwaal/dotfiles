@@ -15,8 +15,13 @@ My personal configuration files managed by [chezmoi](https://chezmoi.io/).
 # Install chezmoi
 brew install chezmoi
 
-# Apply dotfiles
+# Clone dotfiles
 chezmoi init git@github.com:archervanderwaal/dotfiles.git
+
+# Setup configuration (interactive)
+~/.local/share/chezmoi/setup-config.sh
+
+# Apply dotfiles
 chezmoi apply
 
 # Run installation script
@@ -31,7 +36,20 @@ bash -c "$(curl -fsSL https://raw.githubusercontent.com/archervanderwaal/dotfile
 
 ## Secrets Management
 
-Sensitive data (API keys, tokens) are handled via chezmoi templates.
+Sensitive data (API keys, tokens) are managed via `chezmoi.toml`.
+
+### Interactive Setup (Recommended)
+
+```bash
+~/.local/share/chezmoi/setup-config.sh
+```
+
+This will prompt you for:
+- Anthropic API token (for Claude)
+- GitHub personal access token (optional)
+- OpenAI API key (optional)
+
+### Manual Setup
 
 Create `~/.config/chezmoi/chezmoi.toml`:
 
@@ -46,23 +64,31 @@ token = "your_github_token"
 ## Common Commands
 
 ```bash
-chezmoi status      # View changes
-chezmoi add ~/.file # Add new file
-chezmoi edit ~/.file # Edit source file
-chezmoi apply       # Apply all configs
+dot                    # Enter dotfiles directory
+dot-add ~/.file        # Add file to chezmoi
+dot-status             # View changes
+dot-apply              # Apply all configs
+dot-update             # Pull and apply remote changes
+dot-push               # Commit and push changes
 ```
 
 ## Structure
 
 ```
-~/.local/share/chezmoi/
-├── dot_zshrc              # → ~/.zshrc
-├── dot_vimrc              # → ~/.vimrc
-├── dot_tmux.conf          # → ~/.tmux.conf
-├── dot_gitconfig          # → ~/.gitconfig
-├── dot_vscode/            # → ~/.vscode/
-├── dot_claude/            # → ~/.claude/
-└── dot_oh-my-zsh_custom/  # → ~/.oh-my-zsh/custom/
+~/.local/share/chezmoi/     # Source (git repo)
+├── dot_zshrc               # → ~/.zshrc
+├── dot_vimrc               # → ~/.vimrc
+├── dot_tmux.conf           # → ~/.tmux.conf
+├── dot_gitconfig           # → ~/.gitconfig
+├── dot_vscode/             # → ~/.vscode/
+├── dot_claude/             # → ~/.claude/
+├── dot_oh-my-zsh_custom/   # → ~/.oh-my-zsh/custom/
+├── setup-config.sh         # Interactive config setup
+├── install.sh              # Dependency installer
+└── chezmoi.toml.template   # Config template
+
+~/.config/chezmoi/          # Local config (not synced)
+└── chezmoi.toml            # Your actual tokens
 ```
 
 ## Installation Script
@@ -81,21 +107,49 @@ The `install.sh` script automatically installs:
    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
    ```
 
-2. **Clone and apply**:
+2. **Clone and setup**:
    ```bash
    brew install chezmoi
    chezmoi init git@github.com:archervanderwaal/dotfiles.git
+   ~/.local/share/chezmoi/setup-config.sh
    chezmoi apply
    ~/.local/share/chezmoi/install.sh
    ```
 
-3. **Set secrets**:
-   ```bash
-   mkdir -p ~/.config/chezmoi
-   # Edit ~/.config/chezmoi/chezmoi.toml with your tokens
-   ```
-
-4. **Restart shell**:
+3. **Restart shell**:
    ```bash
    exec zsh
    ```
+
+## Daily Workflow
+
+### After modifying configs:
+
+```bash
+# Add changes
+dot-add ~/.vimrc
+
+# Push to GitHub
+dot-push
+```
+
+### On another machine:
+
+```bash
+# Pull latest changes
+dot-update
+```
+
+## Adding New Configs
+
+```bash
+# Edit a file
+vim ~/.config/myapp/config
+
+# Add to chezmoi
+chezmoi add ~/.config/myapp/config
+
+# Commit and push
+cd ~/.local/share/chezmoi
+git add -A && git commit -m "Add myapp config" && git push
+```
