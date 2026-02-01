@@ -1,0 +1,102 @@
+#!/bin/bash
+# Installation script for dotfiles dependencies
+# Run this script after chezmoi apply to install required software
+
+set -e
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+# Function to print colored output
+print_info() {
+    echo -e "${GREEN}[INFO]${NC} $1"
+}
+
+print_warn() {
+    echo -e "${YELLOW}[WARN]${NC} $1"
+}
+
+print_error() {
+    echo -e "${RED}[ERROR]${NC} $1"
+}
+
+# Detect OS
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    OS="macos"
+    INSTALL_CMD="brew install"
+elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
+    OS="linux"
+    if command -v apt-get &> /dev/null; then
+        INSTALL_CMD="sudo apt-get install -y"
+    elif command -v yum &> /dev/null; then
+        INSTALL_CMD="sudo yum install -y"
+    elif command -v pacman &> /dev/null; then
+        INSTALL_CMD="sudo pacman -S --noconfirm"
+    else
+        print_error "Unsupported Linux package manager"
+        exit 1
+    fi
+else
+    print_error "Unsupported OS: $OSTYPE"
+    exit 1
+fi
+
+print_info "Detected OS: $OS"
+
+# Check if Homebrew is installed on macOS
+if [[ "$OS" == "macos" ]] && ! command -v brew &> /dev/null; then
+    print_warn "Homebrew not found. Installing Homebrew..."
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+fi
+
+# Install dependencies
+print_info "Installing dependencies..."
+
+# Core tools
+if [[ "$OS" == "macos" ]]; then
+    brew install chezmoi git vim tmux zsh
+else
+    $INSTALL_CMD chezmoi git vim tmux zsh
+fi
+
+# Install oh-my-zsh if not exists
+if [[ ! -d ~/.oh-my-zsh ]]; then
+    print_info "Installing oh-my-zsh..."
+    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+fi
+
+# Install vim-plug if not exists
+if [[ ! -f ~/.vim/autoload/plug.vim ]]; then
+    print_info "Installing vim-plug..."
+    curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
+        https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+fi
+
+# Install vim plugins
+print_info "Installing vim plugins..."
+vim +PlugInstall +qall
+
+# Install tmux plugins if TPM exists
+if [[ -d ~/.tmux/plugins/tpm ]] && [[ ! -d ~/.tmux/plugins/tmux-sensible ]]; then
+    print_info "Installing tmux plugins..."
+    ~/.tmux/plugins/tpm/bin/install_plugins
+fi
+
+# Install VSCode extensions
+if command -v code &> /dev/null; then
+    print_info "Installing VSCode extensions..."
+    if [[ -f ~/.vscode/extensions/extensions.json ]]; then
+        # Read extensions from file and install
+        # Note: VSCode extensions format may vary
+        code --install-extension eino.eino-dev
+        code --install-extension golang.go
+    fi
+else
+    print_warn "VSCode not found. Skipping extension installation."
+fi
+
+print_info "Installation complete!"
+print_info "Please restart your shell or run: source ~/.zshrc"

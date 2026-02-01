@@ -5,7 +5,7 @@ My personal configuration files managed by [chezmoi](https://chezmoi.io/).
 ## What's Included
 
 - **Shell**: zsh + oh-my-zsh + powerlevel10k
-- **Editor**: vim + plugins
+- **Editor**: vim + plugins, VSCode
 - **Terminal**: tmux + plugins, iTerm2
 - **Tools**: git, Claude Code
 
@@ -18,6 +18,15 @@ brew install chezmoi
 # Apply dotfiles
 chezmoi init git@github.com:archervanderwaal/dotfiles.git
 chezmoi apply
+
+# Run installation script
+~/.local/share/chezmoi/install.sh
+```
+
+## One-line Setup
+
+```bash
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/archervanderwaal/dotfiles/main/install.sh)"
 ```
 
 ## Secrets Management
@@ -51,18 +60,42 @@ chezmoi apply       # Apply all configs
 ├── dot_vimrc              # → ~/.vimrc
 ├── dot_tmux.conf          # → ~/.tmux.conf
 ├── dot_gitconfig          # → ~/.gitconfig
+├── dot_vscode/            # → ~/.vscode/
 ├── dot_claude/            # → ~/.claude/
 └── dot_oh-my-zsh_custom/  # → ~/.oh-my-zsh/custom/
 ```
 
+## Installation Script
+
+The `install.sh` script automatically installs:
+- Core tools (git, vim, tmux, zsh)
+- oh-my-zsh
+- vim-plug and vim plugins
+- tmux plugins (via TPM)
+- VSCode extensions
+
 ## New Machine Setup
 
-1. Install oh-my-zsh first:
+1. **Install Homebrew** (macOS only):
    ```bash
-   sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
    ```
 
-2. Then apply dotfiles:
+2. **Clone and apply**:
    ```bash
-   chezmoi init git@github.com:archervanderwaal/dotfiles.git && chezmoi apply
+   brew install chezmoi
+   chezmoi init git@github.com:archervanderwaal/dotfiles.git
+   chezmoi apply
+   ~/.local/share/chezmoi/install.sh
+   ```
+
+3. **Set secrets**:
+   ```bash
+   mkdir -p ~/.config/chezmoi
+   # Edit ~/.config/chezmoi/chezmoi.toml with your tokens
+   ```
+
+4. **Restart shell**:
+   ```bash
+   exec zsh
    ```
