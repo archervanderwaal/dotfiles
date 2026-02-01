@@ -72,11 +72,11 @@ if [[ "$OS" == "macos" ]]; then
     fi
 
    ################################################################################
-    # Step 2: Configure Homebrew mirror (Tsinghua China mirror)
+    # Step 2: Configure Homebrew mirror (USTC China mirror)
     ################################################################################
 
-    print_info "Configuring Homebrew mirror (Tsinghua)..."
-    cd "$(brew --repo)" && git remote set-url origin https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/brew.git
+    print_info "Configuring Homebrew mirror (USTC)..."
+    cd "$(brew --repo)" && git remote set-url origin https://mirrors.ustc.edu.cn/brew.git
 
     ################################################################################
     # Step 3: Install all packages from Brewfile
