@@ -1,0 +1,24 @@
+[user]
+	name = mayongbin
+	email = mayongbin@didiglobal.com
+[url "git@git.xiaojukeji.com:"]
+	insteadOf = https://git.xiaojukeji.com/
+[http]
+	proxy = 127.0.0.1:7890
+[https]
+	proxy = 127.0.0.1:7890
+[diff]
+	tool = p4merge
+[difftool "p4merge"]
+	cmd = /Applications/p4merge.app/Contents/Resources/launchp4merge $LOCAL $REMOTE
+	path = /Applications/p4merge.app/Contents/Resources/launchp4merge
+[core]
+	excludesfile = /Users/didi/.gitignore_global
+[difftool "sourcetree"]
+	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
+	path = 
+[mergetool "sourcetree"]
+	cmd = /Applications/Sourcetree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
+	trustExitCode = true
+[commit]
+	template = /Users/didi/.stCommitMsg

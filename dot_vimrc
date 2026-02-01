@@ -1,0 +1,339 @@
+" ================ 基础配置 ================
+set nocompatible              " 不兼容 vi
+syntax enable                 " 语法高亮
+set number                    " 显示行号
+set relativenumber            " 相对行号
+set cursorline                " 高亮当前行
+set showmatch                 " 显示括号匹配
+set incsearch                 " 增量搜索
+set hlsearch                  " 高亮搜索结果
+set ignorecase                " 搜索忽略大小写
+set smartcase                 " 智能大小写
+set autoindent                " 自动缩进
+set smartindent               " 智能缩进
+set tabstop=4                 " tab 宽度
+set shiftwidth=4              " 缩进宽度
+set expandtab                 " 用空格代替 tab
+set wrap                      " 自动换行
+set encoding=utf-8            " 编码
+set mouse=a                   " 启用鼠标
+set backspace=indent,eol,start " 退格键行为
+set clipboard=unnamed         " 使用系统剪贴板
+set laststatus=2              " 始终显示状态栏
+set cmdheight=1               " 命令行高度
+
+" ================ 插件配置 ================
+call plug#begin('~/.vim/plugged')
+
+" 目录树插件
+Plug 'preservim/nerdtree'
+
+" 文件图标（让目录树更漂亮）
+Plug 'ryanoasis/vim-devicons'
+
+" 代码高亮主题
+Plug 'morhetz/gruvbox'
+
+" git 状态显示
+Plug 'airblade/vim-gitgutter'
+
+" 状态栏美化
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
+
+" LSP 和代码补全（支持所有语言）
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
+
+" 文件模糊搜索
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'
+
+" 代码大纲（显示函数、结构体列表）
+Plug 'preservim/tagbar'
+
+" 快速在文件中跳转（改进版 % 键）
+Plug 'andymass/vim-matchup'
+
+" GitHub 主题配色
+Plug 'iden3/vim-cosmic-eslint', { 'branch': 'main' }
+Plug 'lifepillar/vim-solarized8'
+Plug 'mcchrish/vim-github-theme'
+
+call plug#end()
+
+" ================ NERDTree 配置 ================
+" 快捷键
+nnoremap <C-n> :NERDTreeToggle<CR>
+nnoremap <leader>n :NERDTreeFocus<CR>
+nnoremap <leader>f :NERDTreeFind<CR>
+
+" NERDTree 设置
+let NERDTreeShowHidden=1           " 显示隐藏文件
+let NERDTreeIgnore=['\.pyc$', '\.o$', '\.so$', '\.a$', '\.swp', '*\.swp', '\.swo', '\.git', '__pycache__', 'node_modules', '\.DS_Store']  " 忽略的文件
+let NERDTreeWinSize=30             " 窗口宽度
+let NERDTreeDirArrows=1            " 使用箭头
+let NERDTreeShowLineNumbers=0      " 不显示行号
+let NERDTreeMinimalMenu=1          " 简化菜单
+
+" NERDTree 配色（匹配 GitHub 主题）
+function! NERDTreeHighlight()
+  " 文件扩展名颜色
+  syntax match NERDTreeGO #\.go$#
+  syntax match NERDTreeJS #\.js$#
+  syntax match NERDTreeVue #\.vue$#
+  syntax match NERDTreeHTML #\.html$#
+  syntax match NERDTreeCSS #\.css$#
+  syntax match NERDTreeJSON #\.json$#
+  syntax match NERDTreeMD #\.md$#
+  syntax match NERDTreeYAML #\.yaml$# containedin=NERDTreeFile
+  syntax match NERDTreeYAML #\.yml$# containedin=NERDTreeFile
+endfunction
+
+" 定义高亮颜色（使用 GitHub 主题色系）
+silent! highlight! link NERDTreeDir Directory
+silent! highlight! link NERDTreeUp Special
+silent! highlight! link NERDTreeOpenable Title
+silent! highlight! link NERDTreeClosable Title
+silent! highlight! link NERDTreeFile Normal
+silent! highlight! link NERDTreeExecFile Identifier
+silent! highlight! link NERDTreeDirSlash Comment
+
+" 文件类型颜色（使用标准语法高亮组）
+silent! highlight! link NERDTreeGO Type
+silent! highlight! link NERDTreeJS Function
+silent! highlight! link NERDTreeVue String
+silent! highlight! link NERDTreeHTML Statement
+silent! highlight! link NERDTreeCSS Constant
+silent! highlight! link NERDTreeJSON Number
+silent! highlight! link NERDTreeMD PreProc
+silent! highlight! link NERDTreeYAML Special
+silent! highlight! link NERDTreeHelp Comment
+silent! highlight! link NERDTreeToggleOn String
+silent! highlight! link NERDTreeToggleOff Comment
+
+" 自动加载高亮
+autocmd FileType nerdtree call NERDTreeHighlight()
+
+" ================ 主题配置 ================
+" 启用真彩色支持（iTerm2 需要这个）
+if has('termguicolors')
+    set termguicolors
+endif
+
+" 使用 GitHub 主题（与 iTerm2 GitHub 主题一致）
+set background=dark
+
+" 尝试加载 GitHub 主题（按优先级）
+silent! colorscheme github_dimmed
+silent! if !exists('g:colors_name') | colorscheme github | endif
+silent! if !exists('g:colors_name') | colorscheme solarized8 | endif
+
+" vim-github-theme 主题设置（如果使用这个插件）
+let g:github_theme_style = 'dark_dimmed'
+let g:github_theme_disable_background = 0
+let g:github_theme_enable_bold = 1
+let g:github_theme_enable_italic = 1
+
+" NERDTree 背景色设置
+let g:NERDTreeWinPos = "left"
+
+" ================ Airline 配置 ================
+let g:airline_theme='github' " 使用 GitHub 主题
+let g:airline_powerline_fonts=1
+let g:airline#extensions#tabline#enabled=1
+
+" ================ 其他配置 ================
+" 当打开没有参数的 vim 时自动打开 NERDTree
+autocmd StdinReadPre * let s:std_in=1
+autocmd VimEnter * if argc() == 0 && !exists('s:std_in') | NERDTree | endif
+
+" 当 NERDTree 是最后一个窗口时自动关闭 vim
+autocmd bufenter * if (winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree()) | q | endif
+
+" ================ coc.nvim 配置 ================
+" Tab 键行为：补全选择、确认、触发
+inoremap <silent><expr> <TAB>
+      \ coc#pum#visible() ? coc#pum#next(1) :
+      \ CheckBackspace() ? "\<Tab>" :
+      \ coc#refresh()
+inoremap <expr><S-TAB> coc#pum#visible() ? coc#pum#prev(1) : "\<C-h>"
+
+" Enter 键确认补全
+inoremap <silent><expr> <CR> coc#pum#visible() ? coc#pum#confirm()
+                              \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
+
+function! CheckBackspace() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~# '\s'
+endfunction
+
+" 使用 Ctrl+Space 触发补全
+inoremap <silent><expr> <c-space> coc#refresh()
+
+" GoTo 代码导航
+nmap <silent> gd <Plug>(coc-definition)
+nmap <silent> gy <Plug>(coc-type-definition)
+nmap <silent> gi <Plug>(coc-implementation)
+nmap <silent> gr <Plug>(coc-references)
+
+" 显示文档（K 键）
+nnoremap <silent> K :call ShowDocumentation()<CR>
+
+function! ShowDocumentation()
+  if CocAction('hasProvider', 'hover')
+    call CocActionAsync('doHover')
+  else
+    call feedkeys('K', 'in')
+  endif
+endfunction
+
+" 符号重命名
+nmap <leader>rn <Plug>(coc-rename)
+
+" 格式化代码
+xmap <leader>f  <Plug>(coc-format-selected)
+nmap <leader>f  <Plug>(coc-format-selected)
+
+" 代码动作（快速修复）
+nmap <leader>ac  <Plug>(coc-codeaction)
+" 选中区域应用代码动作
+xmap <leader>a  <Plug>(coc-codeaction-selected)
+nmap <leader>a  <Plug>(coc-codeaction-selected)
+
+" 诊断列表
+nnoremap <silent> [d <Plug>(coc-diagnostic-prev)
+nnoremap <silent> ]d <Plug>(coc-diagnostic-next)
+
+" 状态栏集成 coc 状态
+function! StatusDiagnostic() abort
+  let info = get(b:, 'coc_diagnostic_info', {})
+  if empty(info) | return '' | endif
+  return get(info, 'error', 0) . 'E' . get(info, 'warning', 0) . 'W'
+endfunction
+set statusline+=%{StatusDiagnostic()}
+
+" 命令
+command! -nargs=0 Prettier :CocCommand prettier.forceFormatDocument
+command! -nargs=0 Format :call CocActionAsync('format')
+
+" coc.nvim 扩展配置
+autocmd FileType json syntax match Comment +\/\/.*$+
+
+" 为 Go 项目自动安装 gopls
+autocmd BufWritePre *.go :silent call CocAction('runCommand', 'editor.action.organizeImport')
+
+" ================ 高级导航功能 ================
+" 符号列表（当前文件的所有函数、结构体、变量等）
+nnoremap <silent> <leader>o :CocList outline<CR>
+
+" 全局符号搜索（整个项目的符号）
+nnoremap <silent> <leader>s :CocList -I symbols<CR>
+
+" 文件列表
+nnoremap <silent> <leader>e :CocList explorer<CR>
+
+" 最近使用的文件
+nnoremap <silent> <leader>fr :CocList files<CR>
+
+" 在项目中搜索文本
+nnoremap <silent> <leader>g :CocList grep<CR>
+
+" 当前文件搜索
+nnoremap <silent> <leader>fz :CocList lines<CR>
+
+" 窗口跳转
+nnoremap <C-h> <C-w>h
+nnoremap <C-j> <C-w>j
+nnoremap <C-k> <C-w>k
+nnoremap <C-l> <C-w>l
+
+" 快速跳转到标签页
+nnoremap <leader>1 1gt
+nnoremap <leader>2 2gt
+nnoremap <leader>3 3gt
+nnoremap <leader>4 4gt
+nnoremap <leader>5 5gt
+
+" 使用 Tab 在标签页间切换
+nnoremap <Tab> gt
+nnoremap <S-Tab> gT
+
+" ===================== 引用查看增强 =====================
+" 查看所有引用（包括读写）- 在预览窗口显示
+nnoremap <silent> <leader>gr :call <SID>show_references()<CR>
+
+function! s:show_references() abort
+  " 保存当前光标位置
+  let l:cursor_pos = getcurpos()
+  " 获取引用
+  call CocActionAsync('runCommand', 'references.view', [], {
+        \ 'list': CocAction('getReferences'),
+        \ 'position': l:cursor_pos
+        \ })
+endfunction
+
+" 查看调用层次（调用当前函数的地方）
+nnoremap <silent> <leader>ci :CocCommand callHierarchy.incomingCalls<CR>
+
+" 查看被调用层次（当前函数调用了哪些函数）
+nnoremap <silent> <leader>co :CocCommand callHierarchy.outgoingCalls<CR>
+
+" ===================== 文件导航 =====================
+" 快速打开文件（支持模糊匹配）
+nnoremap <silent> <leader>p :Files<CR>
+
+" 在当前项目根目录中搜索文件
+nnoremap <silent> <leader>b :Buffers<CR>
+
+" 快速跳转到 alternate 文件（.h <-> .c, .go <-> _test.go）
+nnoremap <silent> <leader>a :A<CR>
+
+" ===================== 代码大纲 =====================
+" 显示当前文件的函数列表（类似 Tagbar）
+nnoremap <silent> <leader>t :TagbarToggle<CR>
+
+" 自动切换标签页标题显示
+let g:airline#extensions#tabline#formatter = 'unique_tail'
+
+" ================ Tagbar 配置 ================
+" Tagbar 快捷键已设置: \t
+let g:tagbar_width = 30
+let g:tagbar_left = 0
+let g:tagbar_sort = 0
+let g:tagbar_compact = 0
+let g:tagbar_autofocus = 1
+let g:tagbar_foldlevel = 2
+
+" Go 语言配置
+let g:tagbar_type_go = {
+    \ 'ctagstype' : 'go',
+    \ 'kinds'     : [
+        \ 'p:package',
+        \ 'i:imports:1',
+        \ 'c:constants',
+        \ 'v:variables',
+        \ 't:types',
+        \ 'n:interfaces',
+        \ 'w:fields',
+        \ 'e:embedded',
+        \ 'm:methods',
+        \ 'r:constructor',
+        \ 'f:functions'
+    \ ],
+    \ 'sro' : '.',
+    \ 'kind2scope' : {
+        \ 't' : 'ctype',
+        \ 'n' : 'ntype'
+    \ },
+    \ 'scope2kind' : {
+        \ 'ctype' : 't',
+        \ 'ntype' : 'n'
+    \ },
+    \ 'ctagsbin'  : 'gotags',
+    \ 'ctagsargs' : '-sort -silent'
+\ }
+
+" ================ vim-matchup 配置 ================
+" 改进的 % 跳转（支持 if-else, start-end 等配对）
+let g:matchup_matchparen_deferred = 1
+let g:matchup_matchparen_status_offscreen = 1
