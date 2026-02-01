@@ -1,100 +1,68 @@
 # Dotfiles
 
-使用 [chezmoi](https://chezmoi.io/) 管理的个人配置文件。
+My personal configuration files managed by [chezmoi](https://chezmoi.io/).
 
-## 支持的应用
+## What's Included
 
-- tmux + 插件
-- vim + 插件
-- git
-- zsh
-- iTerm2
+- **Shell**: zsh + oh-my-zsh + powerlevel10k
+- **Editor**: vim + plugins
+- **Terminal**: tmux + plugins, iTerm2
+- **Tools**: git, Claude Code
 
-## 快速开始
+## Quick Start
 
-### 1. 安装 chezmoi
-
-**macOS:**
 ```bash
+# Install chezmoi
 brew install chezmoi
-```
 
-**Linux:**
-```bash
-curl -fsSL https://chezmoi.io/get | sh
-```
-
-### 2. 拉取配置
-
-```bash
-chezmoi init https://github.com/mayongbin/dotfiles
+# Apply dotfiles
+chezmoi init git@github.com:archervanderwaal/dotfiles.git
 chezmoi apply
 ```
 
-## 敏感信息处理
+## Secrets Management
 
-配置文件中的 API key 等敏感信息使用 chezmoi 模板功能处理。
+Sensitive data (API keys, tokens) are handled via chezmoi templates.
 
-### 设置环境变量
-
-在 `~/.config/chezmoi/chezmoi.toml` 中添加：
+Create `~/.config/chezmoi/chezmoi.toml`:
 
 ```toml
+[data.anthropic]
+token = "your_anthropic_token"
+
 [data.github]
 token = "your_github_token"
-
-[data.openai]
-apikey = "your_openai_api_key"
 ```
 
-或者在 shell 配置中设置（不推荐，仅在临时使用）：
+## Common Commands
 
 ```bash
-export GITHUB_TOKEN="your_token"
-export OPENAI_API_KEY="your_key"
+chezmoi status      # View changes
+chezmoi add ~/.file # Add new file
+chezmoi edit ~/.file # Edit source file
+chezmoi apply       # Apply all configs
 ```
 
-### 添加新的敏感信息
-
-1. 在 `.chezmoi.yaml.tmpl` 中定义变量
-2. 在配置文件中使用 `{{ .variable_name }}` 引用
-3. 将文件重命名为 `*.tmpl`
-4. 重新添加到 chezmoi：`chezmoi add ~/.config/yourfile`
-
-## 常用命令
-
-```bash
-# 查看状态
-chezmoi status
-
-# 添加新文件
-chezmoi add ~/.config/yourfile
-
-# 编辑源文件
-chezmoi edit ~/.config/yourfile
-
-# 应用配置
-chezmoi apply
-
-# 查看差异
-chezmoi diff
-```
-
-## 结构说明
+## Structure
 
 ```
 ~/.local/share/chezmoi/
-├── .chezmoi.yaml.tmpl    # chezmoi 配置模板
-├── .chezmoiignore         # 排除文件列表
-├── dot_gitconfig         # -> ~/.gitconfig
-├── dot_vimrc             # -> ~/.vimrc
-├── dot_tmux.conf         # -> ~/.tmux.conf
-└── private_config/       # 敏感信息模板
-    └── private.tmpl      # -> ~/.config/private/private
+├── dot_zshrc              # → ~/.zshrc
+├── dot_vimrc              # → ~/.vimrc
+├── dot_tmux.conf          # → ~/.tmux.conf
+├── dot_gitconfig          # → ~/.gitconfig
+├── dot_claude/            # → ~/.claude/
+└── dot_oh-my-zsh_custom/  # → ~/.oh-my-zsh/custom/
 ```
 
-## 注意事项
+## New Machine Setup
 
-- **不要**将真实的 API key 提交到仓库
-- 使用 `.chezmoiignore` 排除敏感文件
-- 定期审查提交历史，确保无泄露
+1. Install oh-my-zsh first:
+   ```bash
+   sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+   ```
+
+2. Then apply dotfiles:
+   ```bash
+   chezmoi init git@github.com:archervanderwaal/dotfiles.git && chezmoi apply
+   ```
