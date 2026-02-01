@@ -3,7 +3,6 @@ dot_config/private
 dot_config/*/*private*
 
 # 排除二进制文件
-*.plist
 *.binary
 
 # 排除编辑器临时文件
