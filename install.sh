@@ -75,6 +75,12 @@ print_info "Installing dependencies..."
 # Core tools
 if [[ "$OS" == "macos" ]]; then
     brew install chezmoi git vim tmux zsh
+
+    # Install from Brewfile if exists
+    if [[ -f ~/.Brewfile ]]; then
+        print_info "Installing packages from Brewfile..."
+        brew bundle --file=~/.Brewfile
+    fi
 else
     $INSTALL_CMD chezmoi git vim tmux zsh
 fi

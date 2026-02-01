@@ -7,36 +7,69 @@ My personal configuration files managed by [chezmoi](https://chezmoi.io/).
 - **Shell**: zsh + oh-my-zsh + powerlevel10k
 - **Editor**: vim + plugins, VSCode
 - **Terminal**: tmux + plugins, iTerm2
-- **Tools**: git, Claude Code
+- **Tools**: git, Claude Code, Homebrew packages
 
 ## Quick Start
 
 ```bash
+# Install Homebrew (macOS)
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
 # Install chezmoi
 brew install chezmoi
 
 # Clone dotfiles
 chezmoi init git@github.com:archervanderwaal/dotfiles.git
 
-# Apply dotfiles (will prompt for config if needed)
+# Setup configuration
+cp ~/.local/share/chezmoi/chezmoi.toml.template ~/.config/chezmoi/chezmoi.toml
+# Edit ~/.config/chezmoi/chezmoi.toml and fill in your tokens
+
+# Apply dotfiles
 chezmoi apply
 
-# Install dependencies (auto-creates config if needed)
+# Run installation script (installs Homebrew packages, plugins, etc.)
 ~/.local/share/chezmoi/install.sh
-
-# Edit your tokens
-vim ~/.config/chezmoi/chezmoi.toml
-
-# Re-apply with your tokens
-chezmoi apply
 
 # Restart shell
 exec zsh
 ```
 
+## Homebrew Management
+
+All Homebrew packages are managed via `Brewfile`.
+
+### List installed packages
+
+```bash
+brew bundle list --file=~/.Brewfile
+```
+
+### Add new package
+
+```bash
+# Install package
+brew install package-name
+
+# Update Brewfile
+brew bundle dump --file=~/.Brewfile --force
+
+# Commit to dotfiles
+cd ~/.local/share/chezmoi
+git add Brewfile
+git commit -m "Add package-name"
+git push
+```
+
+### Install all packages on new machine
+
+```bash
+brew bundle --file=~/.Brewfile
+```
+
 ## Secrets Management
 
-The `install.sh` script automatically creates `~/.config/chezmoi/chezmoi.toml` from template.
+Sensitive data (API keys, tokens) are managed via `chezmoi.toml`.
 
 Fill in your tokens:
 
@@ -68,37 +101,25 @@ dot-push               # Commit and push changes
 ### Complete Setup
 
 ```bash
-# 1. Install Homebrew (macOS)
+# 1. Install Homebrew
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
 # 2. Install chezmoi and clone dotfiles
 brew install chezmoi
 chezmoi init git@github.com:archervanderwaal/dotfiles.git
 
-# 3. Apply configs
+# 3. Setup configuration
+cp ~/.local/share/chezmoi/chezmoi.toml.template ~/.config/chezmoi/chezmoi.toml
+vim ~/.config/chezmoi/chezmoi.toml  # Fill in your tokens
+
+# 4. Apply configs
 chezmoi apply
 
-# 4. Run installer (auto-creates config template)
+# 5. Run installer (installs Homebrew packages, plugins, etc.)
 ~/.local/share/chezmoi/install.sh
 
-# 5. Edit config and fill your tokens
-vim ~/.config/chezmoi/chezmoi.toml
-
-# 6. Re-apply
-chezmoi apply
-
-# 7. Restart shell
+# 6. Restart shell
 exec zsh
-```
-
-### Or One-line
-
-```bash
-brew install chezmoi && \
-chezmoi init git@github.com:archervanderwaal/dotfiles.git && \
-chezmoi apply && \
-~/.local/share/chezmoi/install.sh
-# Then edit ~/.config/chezmoi/chezmoi.toml and run: chezmoi apply && exec zsh
 ```
 
 ## Daily Workflow
@@ -108,6 +129,19 @@ chezmoi apply && \
 ```bash
 dot-add ~/.vimrc
 dot-push
+```
+
+### After installing new Homebrew package:
+
+```bash
+# Update Brewfile
+brew bundle dump --file=~/.Brewfile --force
+
+# Commit
+cd ~/.local/share/chezmoi
+git add Brewfile
+git commit -m "Add new package"
+git push
 ```
 
 ### On another machine:
@@ -124,3 +158,16 @@ chezmoi add ~/.config/myapp/config
 cd ~/.local/share/chezmoi
 git commit -m "Add myapp config" && git push
 ```
+
+## Installation Script
+
+The `install.sh` script automatically installs:
+- Core tools (git, vim, tmux, zsh)
+- Homebrew packages from Brewfile
+- oh-my-zsh
+- vim-plug and vim plugins
+- Node.js (for coc.nvim)
+- tmux plugins (via TPM)
+- zsh plugins (zsh-autosuggestions, zsh-syntax-highlighting)
+- powerlevel10k theme
+- iTerm2 configuration
