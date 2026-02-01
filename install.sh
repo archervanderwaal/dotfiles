@@ -23,6 +23,18 @@ print_error() {
     echo -e "${RED}[ERROR]${NC} $1"
 }
 
+# Detect OS
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    OS="macos"
+elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
+    OS="linux"
+else
+    print_error "Unsupported OS: $OSTYPE"
+    exit 1
+fi
+
+print_info "Detected OS: $OS"
+
 # Setup configuration file if not exists
 CHEZMOI_CONFIG="$HOME/.config/chezmoi/chezmoi.toml"
 CHEZMOI_TEMPLATE="$HOME/.local/share/chezmoi/chezmoi.toml.template"
@@ -40,12 +52,110 @@ if [[ ! -f "$CHEZMOI_CONFIG" ]]; then
     fi
 fi
 
-# Detect OS
-if [[ "$OSTYPE" == "darwin"* ]]; then
-    OS="macos"
-    INSTALL_CMD="brew install"
-elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
-    OS="linux"
+################################################################################
+# Step 1: Install Homebrew
+################################################################################
+
+if [[ "$OS" == "macos" ]]; then
+    if ! command -v brew &> /dev/null; then
+        print_info "Installing Homebrew..."
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+        # Add Homebrew to PATH for current session
+        if [[ -f "/opt/homebrew/bin/brew" ]]; then
+            eval "$(/opt/homebrew/bin/brew shellenv)"
+        elif [[ -f "/usr/local/bin/brew" ]]; then
+            eval "$(/usr/local/bin/brew shellenv)"
+        fi
+    else
+        print_info "Homebrew already installed"
+    fi
+
+   ################################################################################
+    # Step 2: Configure Homebrew mirror (China only)
+    # Uncomment if you're in China and want to use mirror
+    ################################################################################
+
+    # print_info "Configuring Homebrew mirror for China..."
+    # export HOMEBREW_BREW_GIT_REMOTE="https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/brew.git"
+    # export HOMEBREW_CORE_GIT_REMOTE="https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/homebrew-core.git"
+    # export HOMEBREW_BOTTLE_DOMAIN="https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles"
+
+    ################################################################################
+    # Step 3: Install all packages from Brewfile
+    ################################################################################
+
+    if [[ -f ~/.Brewfile ]]; then
+        print_info "Installing packages from Brewfile..."
+        brew bundle --file=~/.Brewfile
+    else
+        print_warn "Brewfile not found, skipping..."
+    fi
+
+   ################################################################################
+    # Step 4: Install oh-my-zsh
+    ################################################################################
+
+    if [[ ! -d ~/.oh-my-zsh ]]; then
+        print_info "Installing oh-my-zsh..."
+        sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+    fi
+
+    ################################################################################
+    # Step 5: Install oh-my-zsh custom plugins
+    ################################################################################
+
+    print_info "Installing oh-my-zsh custom plugins..."
+
+    # zsh-autosuggestions
+    if [[ ! -d ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions ]]; then
+        print_info "  Installing zsh-autosuggestions..."
+        git clone https://github.com/zsh-users/zsh-autosuggestions ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions
+    else
+        print_info "  Updating zsh-autosuggestions..."
+        (cd ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions && git pull --quiet)
+    fi
+
+    # zsh-syntax-highlighting
+    if [[ ! -d ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting ]]; then
+        print_info "  Installing zsh-syntax-highlighting..."
+        git clone https://github.com/zsh-users/zsh-syntax-highlighting ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting
+    else
+        print_info "  Updating zsh-syntax-highlighting..."
+        (cd ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting && git pull --quiet)
+    fi
+
+    # powerlevel10k theme
+    if [[ ! -d ~/.oh-my-zsh/custom/themes/powerlevel10k ]]; then
+        print_info "  Installing powerlevel10k..."
+        git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ~/.oh-my-zsh/custom/themes/powerlevel10k
+    else
+        print_info "  powerlevel10k already installed"
+    fi
+
+   ################################################################################
+    # Step 6: Install vim plugins (if vim is used)
+    ################################################################################
+
+    if command -v vim &> /dev/null; then
+        print_info "Installing vim plugins..."
+        vim +PlugInstall +qall
+    fi
+
+   ################################################################################
+    # Step 7: Install tmux plugins (if tmux is used)
+    ################################################################################
+
+    if [[ -d ~/.tmux/plugins/tpm ]] && [[ ! -d ~/.tmux/plugins/tmux-sensible ]]; then
+        print_info "Installing tmux plugins..."
+        ~/.tmux/plugins/tpm/bin/install_plugins
+    fi
+
+elif [[ "$OS" == "linux" ]]; then
+    ################################################################################
+    # Linux: Use system package manager
+    ################################################################################
+
     if command -v apt-get &> /dev/null; then
         INSTALL_CMD="sudo apt-get install -y"
     elif command -v yum &> /dev/null; then
@@ -56,109 +166,33 @@ elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
         print_error "Unsupported Linux package manager"
         exit 1
     fi
-else
-    print_error "Unsupported OS: $OSTYPE"
-    exit 1
-fi
 
-print_info "Detected OS: $OS"
+    print_info "Installing packages with system package manager..."
+    $INSTALL_CMD git vim tmux zsh
 
-# Check if Homebrew is installed on macOS
-if [[ "$OS" == "macos" ]] && ! command -v brew &> /dev/null; then
-    print_warn "Homebrew not found. Installing Homebrew..."
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-fi
-
-# Install dependencies
-print_info "Installing dependencies..."
-
-# Core tools
-if [[ "$OS" == "macos" ]]; then
-    brew install chezmoi git vim tmux zsh
-
-    # Install from Brewfile if exists
-    if [[ -f ~/.Brewfile ]]; then
-        print_info "Installing packages from Brewfile..."
-        brew bundle --file=~/.Brewfile
+    # Install oh-my-zsh
+    if [[ ! -d ~/.oh-my-zsh ]]; then
+        print_info "Installing oh-my-zsh..."
+        sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
     fi
-else
-    $INSTALL_CMD chezmoi git vim tmux zsh
-fi
 
-# Install oh-my-zsh if not exists
-if [[ ! -d ~/.oh-my-zsh ]]; then
-    print_info "Installing oh-my-zsh..."
-    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
-fi
+    # Install zsh plugins (same as macOS)
+    print_info "Installing oh-my-zsh custom plugins..."
 
-# Install oh-my-zsh custom plugins
-print_info "Installing oh-my-zsh custom plugins..."
+    if [[ ! -d ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions ]]; then
+        git clone https://github.com/zsh-users/zsh-autosuggestions ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions
+    fi
 
-# zsh-autosuggestions
-if [[ ! -d ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions ]]; then
-    print_info "  Installing zsh-autosuggestions..."
-    git clone https://github.com/zsh-users/zsh-autosuggestions ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions
-else
-    print_info "  Updating zsh-autosuggestions..."
-    (cd ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions && git pull --quiet)
-fi
-
-# zsh-syntax-highlighting
-if [[ ! -d ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting ]]; then
-    print_info "  Installing zsh-syntax-highlighting..."
-    git clone https://github.com/zsh-users/zsh-syntax-highlighting ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting
-else
-    print_info "  Updating zsh-syntax-highlighting..."
-    (cd ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting && git pull --quiet)
-fi
-
-# powerlevel10k theme
-if [[ ! -d ~/.oh-my-zsh/custom/themes/powerlevel10k ]]; then
-    print_info "  Installing powerlevel10k..."
-    git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ~/.oh-my-zsh/custom/themes/powerlevel10k
-else
-    print_info "  powerlevel10k already installed"
-fi
-
-# Install vim-plug if not exists
-if [[ ! -f ~/.vim/autoload/plug.vim ]]; then
-    print_info "Installing vim-plug..."
-    curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
-        https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-fi
-
-# Install Node.js for coc.nvim
-if ! command -v node &> /dev/null; then
-    print_info "Installing Node.js (required for coc.nvim)..."
-    if [[ "$OS" == "macos" ]]; then
-        brew install node
-    else
-        $INSTALL_CMD nodejs npm
+    if [[ ! -d ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting ]]; then
+        git clone https://github.com/zsh-users/zsh-syntax-highlighting ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting
     fi
 fi
 
-# Install vim plugins
-print_info "Installing vim plugins..."
-vim +PlugInstall +qall
+################################################################################
+# Complete
+################################################################################
 
-# Install tmux plugins if TPM exists
-if [[ -d ~/.tmux/plugins/tpm ]] && [[ ! -d ~/.tmux/plugins/tmux-sensible ]]; then
-    print_info "Installing tmux plugins..."
-    ~/.tmux/plugins/tpm/bin/install_plugins
-fi
-
-# Install VSCode extensions
-if command -v code &> /dev/null; then
-    print_info "Installing VSCode extensions..."
-    if [[ -f ~/.vscode/extensions/extensions.json ]]; then
-        # Read extensions from file and install
-        # Note: VSCode extensions format may vary
-        code --install-extension eino.eino-dev
-        code --install-extension golang.go
-    fi
-else
-    print_warn "VSCode not found. Skipping extension installation."
-fi
-
+echo ""
 print_info "Installation complete!"
-print_info "Please restart your shell or run: source ~/.zshrc"
+echo ""
+echo "Please restart your shell or run: exec zsh"
