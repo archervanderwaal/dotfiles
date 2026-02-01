@@ -72,14 +72,11 @@ if [[ "$OS" == "macos" ]]; then
     fi
 
    ################################################################################
-    # Step 2: Configure Homebrew mirror (China only)
-    # Uncomment if you're in China and want to use mirror
+    # Step 2: Configure Homebrew mirror (Tsinghua China mirror)
     ################################################################################
 
-    # print_info "Configuring Homebrew mirror for China..."
-    # export HOMEBREW_BREW_GIT_REMOTE="https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/brew.git"
-    # export HOMEBREW_CORE_GIT_REMOTE="https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/homebrew-core.git"
-    # export HOMEBREW_BOTTLE_DOMAIN="https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles"
+    print_info "Configuring Homebrew mirror (Tsinghua)..."
+    cd "$(brew --repo)" && git remote set-url origin https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/brew.git
 
     ################################################################################
     # Step 3: Install all packages from Brewfile
