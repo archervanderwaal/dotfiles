@@ -3,8 +3,15 @@
 {{- $github = env "GITHUB_TOKEN" -}}
 {{- end -}}
 
+{{- $anthropic := "" -}}
+{{- if env "ANTHROPIC_AUTH_TOKEN" -}}
+{{- $anthropic = env "ANTHROPIC_AUTH_TOKEN" -}}
+{{- end -}}
+
 data:
     github:
         token: {{ $github | quote }}
     openai:
         apikey: {{ env "OPENAI_API_KEY" | quote }}
+    anthropic:
+        token: {{ $anthropic | quote }}

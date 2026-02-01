@@ -16,3 +16,17 @@ dot_config/*/*private*
 .netrwhist
 .zsh_history
 .zsessions
+
+# 排除 Claude 临时文件
+dot_claude/cache
+dot_claude/debug
+dot_claude/file-history
+dot_claude/history.jsonl
+dot_claude/paste-cache
+dot_claude/plans
+dot_claude/projects
+dot_claude/session-env
+dot_claude/shell-snapshots
+dot_claude/stats-cache.json
+dot_claude/todos
+dot_claude/statsig

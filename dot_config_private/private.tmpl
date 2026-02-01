@@ -1,0 +1,14 @@
+# 私有配置文件示例 - 包含敏感信息
+# 此文件不会被上传到 GitHub（通过 .chezmoiignore 排除）
+# chezmoi apply 时会从环境变量读取
+
+[github]
+    user = mayongbin
+    token = {{ .github.token }}
+
+[openai]
+    apikey = {{ .openai.apikey }}
+
+# 添加其他服务的 API key
+# [service_name]
+#     apikey = {{ .service_name.apikey }}
