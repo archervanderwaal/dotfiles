@@ -31,9 +31,6 @@ dot_claude/stats-cache.json
 dot_claude/todos
 dot_claude/statsig
 
-# 排除 oh-my-zsh 插件中的 .git 目录
-dot_oh-my-zsh/custom/*/.git
-dot_oh-my-zsh/custom/*/.git/*
 
 # 排除 VSCode 扩展二进制文件
 dot_vscode/extensions/*/node_modules
